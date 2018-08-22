@@ -8,6 +8,7 @@ include(
     'settings/MIDDLEWARE.py',
     'settings/TEMPLATES.py',
     'settings/AUTH_PASSWORD_VALIDATORS.py',
+    'settings/CKEDITOR_CONFIGS.py'
 )
 
 
