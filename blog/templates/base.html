@@ -1,6 +1,33 @@
 <!DOCTYPE html> {% load staticfiles %}
 <html lang="en">
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="{% static 'bootstrap-theme/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap-theme/css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap-theme/css/owl.carousel.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'bootstrap-theme/fonts/ionicons/css/ionicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap-theme/fonts/fontawesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap-theme/fonts/flaticon/font/flaticon.css' %}">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" href="{% static 'bootstrap-theme/css/style.css' %}">
+  </head>
+  <body>
+    <h1 align="center">{% block title %} {% endblock %}</h1>
     {% block content %} {% endblock %}
-</body>
+
+    <script src="{% static 'bootstrap-theme/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap-theme/js/jquery-migrate-3.0.0.js' %}"></script>
+    <script src="{% static 'bootstrap-theme/js/popper.min.js' %}"></script>
+    <script src="{% static 'bootstrap-theme/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'bootstrap-theme/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'bootstrap-theme/js/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'bootstrap-theme/js/jquery.stellar.min.js' %}"></script>
+
+    <script src="{% static 'bootstrap-theme/js/main.js' %}"></script>
+  </body>
 </html>

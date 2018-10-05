@@ -11,6 +11,5 @@ INSTALLED_APPS = [
     'taggit',
     'ckeditor',
     'ckeditor_uploader',
-    'easy_thumbnails',
-    'registration'
+    'easy_thumbnails'
 ]
