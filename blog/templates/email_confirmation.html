@@ -1,0 +1,24 @@
+{% extends "base.html"  %}
+
+{% block title %}
+Восстановление доступа
+{% endblock %}
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+     <div align="center">
+            <div class="form-group">
+                <div><label >Электронный адрес:</label></div>
+                <div>{{form.email}}</div>
+                <div class="error" style="color: red">{{form.email.errors}}</div>
+                <small style="display: none">{{ form.email.help_text }}</small>
+            </div>
+            <button type="submit">Далее</button>
+    </div>
+    {% if invalid %}
+    <div align="center">
+        <span align = "center" style="color: red">Неверный адрес!</span>
+    </div>
+    {% endif %}
+  </form>
+{% endblock %}
