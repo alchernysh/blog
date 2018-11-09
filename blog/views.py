@@ -22,12 +22,24 @@ def get_token(user):
 def get_uid(user):
     return urlsafe_base64_encode(force_bytes(user.pk))
 
+def get_email_message(request,user_email,email_template,email_subject):
+    current_site = get_current_site(request)
+    user = User.objects.get(email=user_email)
+    parameters = {}
+    parameters['user'] = user
+    parameters['domain'] = current_site.domain
+    parameters['uid'] = get_uid(user)
+    parameters['token'] = get_token(user)
+    message = render_to_string(email_template,parameters)
+    return EmailMessage(email_subject,message,to=[user_email])
+
 @login_required
 def index(request):
     return render(request, 'index.html')
 
 def login(request):
     form = LoginForm(request.POST or None)
+    context = {'form':form}
     if request.POST and form.is_valid():
         username = form.cleaned_data["login"]
         password = form.cleaned_data["password"]
@@ -39,55 +51,49 @@ def login(request):
             else:
                 return redirect(reverse('index'))
         else:
-            return render(request, 'login.html',{'form': form,'invalid': True })        
-    return render(request, 'login.html', {'form': form})
+            context['invalid'] = True
+            return render(request, './authentication/login.html',context)        
+    return render(request, './authentication/login.html', context)
 
 def email_confirmation(request):
     form = EmailForm(request.POST or None)
+    context = {'form':form}
     if request.POST and form.is_valid():
         user_email =  form.cleaned_data["email"]
         try:
-            user = User.objects.get(email=user_email)
-            current_site = get_current_site(request)
-            message = render_to_string('change_password_email.html', {
-                'user':user, 'domain':current_site.domain,
-                'uid': get_uid(user),
-                'token': get_token(user),
-            })
-            mail_subject = 'Смена пароля.'
-            email = EmailMessage(mail_subject, message, to=[user_email])
+            email_subject = 'Смена пароля.'
+            email_template = './changing_password/change_password_email.html'
+            email = get_email_message(request,user_email,email_template,email_subject)
             email.send()
-            return render(request,'email_confirmation_success.html')
+            return render(request,'./changing_password/email_confirmation_success.html')
         except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return render(request, 'email_confirmation.html',{'form': form,'invalid': True})
-    return render(request, 'email_confirmation.html', {'form': form})
+            context['invalid'] = True
+            return render(request, './changing_password/email_confirmation.html',context)
+    return render(request, './changing_password/email_confirmation.html', context)
 
 @login_required
 def logout(request):
     auth.logout(request)
-    return render(request,'logout.html')
+    return render(request,'./authentication/logout.html')
 
 def signup(request):
     form = SignupForm(request.POST or None)
+    context = {'form':form}
     if request.POST and form.is_valid():
-        users_with_email = User.objects.filter(email=form.cleaned_data.get('email'))
+        user_email = form.cleaned_data.get('email')
+        users_with_email = User.objects.filter(email=user_email)
         if len(users_with_email)>0:
-            return render(request, 'signup.html', {'form': form, 'invalid': True})
+            context['invalid'] = True
+            return render(request, './registration/signup.html',context)
         user = form.save(commit=False)
         user.is_active = False
         user.save()
-        current_site = get_current_site(request)
-        message = render_to_string('acc_active_email.html', {
-            'user':user, 'domain':current_site.domain,
-            'uid': get_uid(user),
-            'token': get_token(user),
-        })
-        mail_subject = 'Подтверждение регистрации.'
-        to_email = form.cleaned_data.get('email')
-        email = EmailMessage(mail_subject, message, to=[to_email])
+        email_subject = 'Подтверждение регистрации.'
+        email_template = './registration/acc_active_email.html'
+        email = get_email_message(request,user_email,email_template,email_subject)
         email.send()
-        return render(request,'create_user_success.html')
-    return render(request, 'signup.html', {'form': form})
+        return render(request,'./registration/create_user_success.html')
+    return render(request, './registration/signup.html',context)
 
 def activate(request, uidb64, token):
     try:
@@ -99,12 +105,13 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         auth.login(request, user)
-        return render(request,'signup_success.html')
+        return render(request,'./registration/signup_success.html')
     else:
-        return render(request,'signup_failure.html')
+        return render(request,'./registration/signup_failure.html')
 
 def change_password(request, uidb64, token):
     form = ChangePasswordForm(request.POST or None)
+    context = {'form':form}
     uid = force_text(urlsafe_base64_decode(uidb64))
     user = User.objects.get(pk=uid)
     if user is not None and confirmation_token.check_token(user, token):
@@ -112,12 +119,13 @@ def change_password(request, uidb64, token):
             password1 = request.POST["password1"]
             password2 = request.POST["password2"]
             if password1 != password2:
-                return render(request, 'change_password.html', {'form' : form, 'invalid': True})
+                context['invalid'] = True
+                return render(request, './changing_password/change_password.html',context)
             user.set_password(password1)
             user.save()
-            return render(request,'change_password_success.html')
+            return render(request,'./changing_password/change_password_success.html')
         else:
-            return render(request, 'change_password.html', {'form' : form})
+            return render(request, './changing_password/change_password.html',context)
     else:
-        return render(request,'change_password_failure.html')
-    return render(request, 'change_password.html', {'form' : form})
+        return render(request,'./changing_password/change_password_failure.html')
+    return render(request, './changing_password/change_password.html',context)

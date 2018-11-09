@@ -5,7 +5,7 @@ from blog.views import get_uid,get_token
 from django.contrib.sites.shortcuts import get_current_site
 class LoginTest(TestCase):
 	def setUp(self):
-		test_user = User.objects.create_user(username='testuser', password='12345') 
+		test_user = User.objects.create_user(username='testuser', password='12345',email = 'email@dom.org') 
 		test_user.save()
 		reg_user = User.objects.create_user(username='reg_user', password='regpass12345')
 		reg_user.is_active = False
@@ -33,5 +33,11 @@ class LoginTest(TestCase):
 		reg_user = User.objects.get(username = 'reg_user')
 		activate_url = 'activate/'+get_uid(reg_user)+'/'+get_token(reg_user)+'/'
 		resp = self.client.get('http://localhost:8000/'+activate_url)
+		self.assertEqual(resp.status_code, 200)
+
+	def test_email_confirmation(self):
+		test_user = User.objects.get(username = 'testuser')
+		confirm_url = 'change_password/'+get_uid(test_user)+'/'+get_token(test_user)+'/'
+		resp = self.client.get('http://localhost:8000/'+confirm_url)
 		self.assertEqual(resp.status_code, 200)
 
