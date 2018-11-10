@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.shortcuts import *
-from .models import Post
+from .models import Note
 from .forms  import LoginForm,SignupForm,EmailForm,ChangePasswordForm
 from django.contrib.auth.decorators import login_required
 import  django.contrib.auth as auth
@@ -15,6 +15,7 @@ from .tokens import confirmation_token
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def get_token(user):
     return confirmation_token.make_token(user)
@@ -35,7 +36,7 @@ def get_email_message(request,user_email,email_template,email_subject):
 
 @login_required
 def index(request):
-    return render(request, 'index.html')
+    return redirect('notes')
 
 def login(request):
     form = LoginForm(request.POST or None)
@@ -139,3 +140,19 @@ def change_password(request, uidb64, token):
         else:
             return render(request, './changing_password/change_password.html',context)
         return render(request, './changing_password/change_password.html',context)
+
+@login_required
+def notes(request):
+    current_user = request.user
+    note_list = Note.objects.filter(user=current_user).order_by('-posted_date')
+    paginator = Paginator(note_list, 2)
+    page = request.GET.get('page')
+    try:
+        notes = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        notes = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        notes = paginator.page(paginator.num_pages)
+    return render(request,'./notes/notes_list.html', {"notes": notes} )

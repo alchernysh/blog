@@ -58,7 +58,7 @@ STATIC_ROOT =  os.path.join(BASE_DIR, 'static')
 
 LOGIN_URL = '/login/'
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/notes_list/'
 
 REGISTRATION_OPEN = True
 

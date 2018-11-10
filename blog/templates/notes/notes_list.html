@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+Заметки
+{% endblock %}
+
+{% block content %}
+<div align="center" class="container">
+    {% for note in notes %}
+    <div class="row">
+        <div class="col">
+            <h3>{{ note.title }}</h3>
+            <p align="right">{{note.posted_date}}</p>
+            <p>{{ note.body|safe|truncatechars_html:900 }}<b>...</b></p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% if notes.paginator.num_pages >= 2 %}
+<ul class="pagination justify-content-center">
+    {% if notes.has_previous %}
+    <li class="page-item">
+        <a class="page-link" href="?page={{ notes.previous_page_number }}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Назад</span>
+          </a>
+    </li>
+    {% endif %}
+    {% for num in notes.paginator.page_range %}
+    {% if num == notes.number %}
+    <li class="active" class="page-item">
+        <a class="page-link" href="#"><b>{{ num }}</b></a>
+    </li>
+    {% else %}
+    <li class="page-item">
+        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+    {% if notes.has_next %}
+    <li class="page-item">
+        <a class="page-link" href="?page={{ notes.next_page_number }}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Далее</span>
+          </a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
+{% endblock %}
