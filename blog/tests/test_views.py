@@ -4,6 +4,7 @@ from django.shortcuts import *
 from blog.views import get_uid,get_token
 from django.contrib.sites.shortcuts import get_current_site
 class LoginTest(TestCase):
+	
 	def setUp(self):
 		test_user = User.objects.create_user(username='testuser', password='12345',email = 'email@dom.org') 
 		test_user.save()

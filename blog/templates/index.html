@@ -3,8 +3,4 @@
 {% block title %}Главная страница{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<p align="center">Вы авторизованы как {{ user.username }}.</p>
- <p align="center"><a href="{% url 'logout' %}">Выход</a></p>
-{% endif %}
 {% endblock %}

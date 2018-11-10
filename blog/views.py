@@ -41,9 +41,10 @@ def login(request):
     form = LoginForm(request.POST or None)
     context = {'form':form}
     if request.POST and form.is_valid():
-        username = form.cleaned_data["login"]
+        email = form.cleaned_data["email"]
         password = form.cleaned_data["password"]
-        user = auth.authenticate(username=username, password=password)
+        user = User.objects.get(email=email)
+        user = auth.authenticate(username=user.username, password=password)
         if user:
             auth.login(request, user)
             if request.GET.get('next') is not None:
@@ -74,7 +75,7 @@ def email_confirmation(request):
 @login_required
 def logout(request):
     auth.logout(request)
-    return render(request,'./authentication/logout.html')
+    return redirect(reverse('index'))
 
 def signup(request):
     form = SignupForm(request.POST or None)
@@ -83,9 +84,15 @@ def signup(request):
         user_email = form.cleaned_data.get('email')
         users_with_email = User.objects.filter(email=user_email)
         if len(users_with_email)>0:
-            context['invalid'] = True
+            context['invalid_email'] = True
             return render(request, './registration/signup.html',context)
-        user = form.save(commit=False)
+        user_password1 = form.cleaned_data.get('password1')
+        user_password2 = form.cleaned_data.get('password2')
+        if user_password1 != user_password2:
+            context['different_passwords'] = True
+            return render(request, './registration/signup.html',context)
+        user = User.objects.create_user(username=user_email,password=user_password1,email=user_email)
+        #user = form.save(commit=False)
         user.is_active = False
         user.save()
         email_subject = 'Подтверждение регистрации.'
@@ -104,7 +111,7 @@ def activate(request, uidb64, token):
     if user is not None and confirmation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        auth.login(request, user)
+        #auth.login(request, user)
         return render(request,'./registration/signup_success.html')
     else:
         return render(request,'./registration/signup_failure.html')
@@ -112,9 +119,14 @@ def activate(request, uidb64, token):
 def change_password(request, uidb64, token):
     form = ChangePasswordForm(request.POST or None)
     context = {'form':form}
-    uid = force_text(urlsafe_base64_decode(uidb64))
-    user = User.objects.get(pk=uid)
-    if user is not None and confirmation_token.check_token(user, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is None or confirmation_token.check_token(user, token) == False:
+        return render(request,'./changing_password/change_password_failure.html')
+    else:
         if request.POST and form.is_valid():
             password1 = request.POST["password1"]
             password2 = request.POST["password2"]
@@ -126,6 +138,4 @@ def change_password(request, uidb64, token):
             return render(request,'./changing_password/change_password_success.html')
         else:
             return render(request, './changing_password/change_password.html',context)
-    else:
-        return render(request,'./changing_password/change_password_failure.html')
-    return render(request, './changing_password/change_password.html',context)
+        return render(request, './changing_password/change_password.html',context)

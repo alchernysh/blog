@@ -3,29 +3,30 @@
 Авторизация
 {% endblock %}
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
-    <div align="center">
-        <div class="form-group">
-            <div><label>Пользователь:</label></div>
-            <div>{{form.login}}</div>
-            <div class="error">{{form.login.errors}}</div>
-        </div>
-        <div class="form-group">
-            <div><label>Пароль:</label></div>
-            <div>{{form.password}}</div>
-            <div class="error">{{form.password.errors}}</div>
-        </div>
-        <input width = "14.2%" display = "inline-block" type="submit" value="Войти">
+<div class="div-center">
+    <div class="content">
+        <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label><b>Электронная почта:</b></label>
+                    <div>{{form.email}}</div>
+                    <div class="error">{{form.email.errors}}</div>
+                </div>
+                <div class="form-group">
+                    <label><b>Пароль:</b></label>
+                    <div>{{form.password}}</div>
+                    <div class="error">{{form.password.errors}}</div>
+                </div>
+                <div align="center">
+                <input id="submit" type="submit" class="btn btn-primary" value="Войти">
+                </div>
+                <hr/>
+                <a href="{% url 'signup' %}">Зарегистрироваться</a>
+                <a href="{% url 'email_confirmation' %}">Забыли пароль?</a>
+                {% if invalid %}
+                <span align = "center" style="color: red">Неверное имя пользователя или пароль.</span>
+                {% endif %}
+        </form>
     </div>
-    <div align="center">
-        <a href="{% url 'signup' %}">Зарегистрироваться,</a>
-        <a href="{% url 'email_confirmation' %}">Восстановить пароль</a>
-    </div>
-    {% if invalid %}
-    <div align="center">
-    <span align = "center" style="color: red">Неверное имя пользователя или пароль.</span>
-    </div>
-    {% endif %}
-</form>
+</div>
 {% endblock %}
