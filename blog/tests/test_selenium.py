@@ -8,8 +8,10 @@ from blog.views import get_uid,get_token
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait as wait
 
+port = 8000
+
 class AccountTestCase(LiveServerTestCase):
-    port = 8000
+    port = port
 
     def setUp(self):
         test_user = User.objects.create_user(username='testuser', password='12345',email = 'email@dom.org') 
