@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.activate, name='activate'),
     url(r'^notes_list/$', views.notes, name='notes'),
+    url(r'^note_new/$', views.note_new, name='note_new'),
     url(r'^$', views.index, name = 'index' ),
 ]

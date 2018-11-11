@@ -4,3 +4,4 @@
 ./Site/settings/DATABASES.py
 ./Site/settings/EMAIL.py
 /geckodriver.log
+/static/

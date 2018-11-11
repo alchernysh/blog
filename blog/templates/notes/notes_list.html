@@ -7,13 +7,19 @@
 {% endblock %}
 
 {% block content %}
+<div align="right" class="right">
+    <form action="/note_new/" method="get">
+        <input id="submit" type="submit" class="btn btn-primary" value="Новая заметка">
+    </form>
+</div>
 <div align="center" class="container">
     {% for note in notes %}
     <div class="row">
         <div class="col">
             <h3>{{ note.title }}</h3>
             <p align="right">{{note.posted_date}}</p>
-            <p>{{ note.body|safe|truncatechars_html:900 }}<b>...</b></p>
+            <p>{{ note.body|safe|truncatechars_html:900 }}
+            </p>
         </div>
     </div>
     {% endfor %}

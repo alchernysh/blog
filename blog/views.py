@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.shortcuts import *
 from .models import Note
-from .forms  import LoginForm,SignupForm,EmailForm,ChangePasswordForm
+from .forms  import LoginForm,SignupForm,EmailForm,ChangePasswordForm,NoteForm
 from django.contrib.auth.decorators import login_required
 import  django.contrib.auth as auth
 from django.http import HttpResponse
@@ -16,6 +16,8 @@ from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.template.context_processors import csrf
+from django.utils import timezone
 
 def get_token(user):
     return confirmation_token.make_token(user)
@@ -156,3 +158,25 @@ def notes(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         notes = paginator.page(paginator.num_pages)
     return render(request,'./notes/notes_list.html', {"notes": notes} )
+
+@login_required
+def note_new(request):
+    if request.method == "POST":
+        form = NoteForm(request.POST)
+        note = form.save(commit=False)
+        note.user = request.user
+        note.published_date = timezone.now()
+        note.save()
+        context = {
+        "form":form
+        }
+        context.update(csrf(request))
+        return redirect('notes')
+    else:
+        form = NoteForm( initial = {})
+        context = {
+        "form":form
+        }
+        context.update(csrf(request))
+        return render(request,'./notes/note_new.html',context)
+
