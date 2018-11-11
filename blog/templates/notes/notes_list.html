@@ -12,16 +12,38 @@
         <input id="submit" type="submit" class="btn btn-primary" value="Новая заметка">
     </form>
 </div>
+<hr>
 <div align="center" class="container">
     {% for note in notes %}
+    <div class="div-container">
     <div class="row">
         <div class="col">
             <h3>{{ note.title }}</h3>
             <p align="right">{{note.posted_date}}</p>
             <p>{{ note.body|safe|truncatechars_html:900 }}
             </p>
-        </div>
+<div class="buttons">
+    <div  class="button">
+    <form action="{% url 'note_detail' id=note.id %}" method="get">
+        <input id="submit" type="submit" class="btn btn-primary" value="Подробнее">
+    </form>
     </div>
+    <div  class="button">
+    <form action="{% url 'note_edit' id=note.id %}" method="get">
+        <input id="submit" type="submit" class="btn btn-primary" value="Изменить">
+    </form>
+    </div>
+    <div class="button">
+    <form action="{% url 'note_delete' id=note.id %}" method="get">
+        <input id="submit" type="submit" class="btn btn-primary" value="Удалить">
+    </form>
+    </div>
+</div>
+        </div>
+
+    </div>
+
+</div>
     {% endfor %}
 </div>
 {% if notes.paginator.num_pages >= 2 %}

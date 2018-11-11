@@ -180,3 +180,25 @@ def note_new(request):
         context.update(csrf(request))
         return render(request,'./notes/note_new.html',context)
 
+@login_required
+def note_edit(request, id=None):
+    if id:
+        note = get_object_or_404(Note, id=id)
+    form = NoteForm(request.POST or None, instance=note)
+    if request.POST:
+        if form.is_valid():
+            form.save()
+            return redirect('notes')
+    return render(request,'./notes/note_edit.html', {'form': form})
+
+@login_required
+def note_detail(request, id):
+    note = get_object_or_404(Note, id=id)
+    return render(request, './notes/note_detail.html', {'note': note})
+
+@login_required
+def note_delete(request, id=None):
+    if id:
+        note = get_object_or_404(Note, id=id)
+        note.delete()
+    return redirect('notes')

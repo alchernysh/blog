@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Редактирование заметки
+{% endblock %}
+
+{% block content %}
+<div align="right" class="right">
+<form action="/notes_list/" method="get">
+    <input id="submit" type="submit" class="btn btn-primary" value="Отмена">
+</form>
+</div>
+<form method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div align="center" class="div-container">
+        <b>
+        {{ form.media }}
+        {{ form.as_p }}
+      </b>
+        <input id="submit" type="submit" class="btn btn-primary" value="Сохранить">
+    </div>
+</form>
+{% endblock %}

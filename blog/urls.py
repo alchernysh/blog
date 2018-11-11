@@ -12,5 +12,8 @@ urlpatterns = [
         views.activate, name='activate'),
     url(r'^notes_list/$', views.notes, name='notes'),
     url(r'^note_new/$', views.note_new, name='note_new'),
+    url(r'^note_edit/id=(?P<id>[0-9]+)/$', views.note_edit, name='note_edit'),
+    url(r'^note_detail/id=(?P<id>[0-9]+)/$', views.note_detail, name='note_detail'),
+    url(r'^note_delete/id=(?P<id>[0-9]+)/$', views.note_delete, name='note_delete'),
     url(r'^$', views.index, name = 'index' ),
 ]
